@@ -88,23 +88,23 @@
             z-index: -1;
             opacity: 0.9;
         }
-        /* 漂浮文字：强制一行显示，不换行 */
+        /* 漂浮文字：一行显示+加快速度 */
         .floating-text {
             position: absolute;
             color: #fff;
             text-shadow: 0 0 18px #ff8c8c;
-            font-size: 1rem; /* 缩小字体，适配长文本一行显示 */
+            font-size: 1rem;
             font-weight: 500;
             pointer-events: none;
             z-index: 2;
-            animation: floatLeftToRight 30s linear infinite; /* 大幅放慢，确保长文本读完 */
-            white-space: nowrap; /* 强制不换行 */
+            animation: floatLeftToRight 18s linear infinite; /* 速度加快（18-25秒） */
+            white-space: nowrap; /* 强制一行 */
             line-height: 1.4;
         }
-        /* 超慢漂浮，适配长文本阅读 */
+        /* 加快漂浮动画，保持阅读节奏 */
         @keyframes floatLeftToRight {
             0% {
-                transform: translateX(-500px) translateY(0); /* 左侧更远处入场，留足阅读时间 */
+                transform: translateX(-500px) translateY(0);
                 opacity: 0;
             }
             10% {
@@ -265,7 +265,7 @@
         }
         animate();
 
-        // 专属漂浮文字（长文本一行显示，防重叠）
+        // 专属漂浮文字（加快速度+不重叠）
         const floatingTexts = [
             "前程似锦",
             "新的一年，祝你好运",
@@ -278,42 +278,38 @@
             "这个冬天我说过会去找你的，我会去履行自己的承诺，那怕是自己一个人",
             "冬天见，或许不会再见",
             "最后：莫绪芬，我爱你，我不后悔，我只后悔没有好好的珍惜这617天",
-            "如果注定不会重新开始，那就祝你早一点遇到你的白马王子，那就把我忘了吧"
+            "如果注定不会重新开始，那就祝你早一点遇到你的白马王子，遇到就把我忘了吧"
         ];
         const body = document.body;
         const maxHeight = window.innerHeight;
-        const rowHeight = 80; // 每行垂直间距（缩小，适配一行文字）
-        const totalRows = 5; // 垂直分5行，分散文字
+        const rowHeight = 80;
+        const totalRows = 5;
 
         function createFloatingText() {
             const textEl = document.createElement('div');
             textEl.className = 'floating-text';
             textEl.textContent = floatingTexts[Math.floor(Math.random() * floatingTexts.length)];
 
-            // 随机分配到5行，每行1个，垂直不重叠
             const row = Math.floor(Math.random() * totalRows);
-            const top = row * rowHeight + 50; // 每行起始位置，避开顶部和底部
+            const top = row * rowHeight + 50;
             textEl.style.top = `${top}px`;
-            textEl.style.left = '-500px'; // 左侧远处入场，适配长文本
+            textEl.style.left = '-500px';
 
-            // 轻微垂直偏移，轨迹自然
             const yOffset = Math.random() * 20 - 10;
             textEl.style.setProperty('--y-offset', `${yOffset}px`);
 
-            // 动画时长30-40秒，确保长文本完整读完
-            textEl.style.animationDuration = `${Math.random() * 10 + 30}s`;
+            // 动画时长18-25秒（比之前快约40%），兼顾速度和阅读
+            textEl.style.animationDuration = `${Math.random() * 7 + 18}s`;
 
             body.appendChild(textEl);
 
-            // 动画结束后移除
             setTimeout(() => {
                 textEl.remove();
             }, parseInt(textEl.style.animationDuration) * 1000);
         }
 
-        // 延长创建间隔到4秒，大幅减少同时出现的文字数量
+        // 保持4秒创建间隔，避免速度快导致重叠
         setInterval(createFloatingText, 4000);
-        // 初始创建3个（分散在不同行），避免拥挤
         for (let i = 0; i < 3; i++) {
             setTimeout(createFloatingText, i * 1000);
         }
