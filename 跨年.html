@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026跨年祝福·致莫绪芬</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            height: 100vh;
+            background-color: #0a0a1a;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        #bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.8;
+            background-image: url("https://picsum.photos/id/1040/1920/1080");
+            background-image: url("http://image.aibochinese.com/i/2025/11/25/qys030.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 15px #ff6b6b;
+            animation: flash 2s infinite alternate;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            z-index: 1;
+            opacity: 0.6;
+        }
+        .countdown {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            z-index: 1;
+        }
+        .time-box {
+            text-align: center;
+            background: rgba(0,0,0,0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(8px);
+            opacity: 0.6;
+        }
+        .time {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd166;
+            text-shadow: 0 0 10px rgba(0,0,0,0.6);
+        }
+        .label {
+            font-size: 0.9rem;
+            color: #d1d1e0;
+            text-shadow: 0 0 8px rgba(0,0,0,0.6);
+        }
+        #blessing {
+            font-size: 1.2rem;
+            color: #80ed99;
+            opacity: 0.6;
+            transition: opacity 1s ease;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.6;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+            z-index: 1;
+        }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.9;
+        }
+        /* 漂浮文字：分行显示+固定行高，避免重叠 */
+        .floating-text {
+            position: absolute;
+            color: #fff;
+            text-shadow: 0 0 18px #ff8c8c;
+            font-size: 1.1rem;
+            font-weight: 500;
+            pointer-events: none;
+            z-index: 2;
+            animation: floatLeftToRight 25s linear infinite; /* 再放慢，拉开间距 */
+            line-height: 1.8; /* 增大行高 */
+            width: 220px; /* 固定宽度，自动换行 */
+            white-space: normal; /* 允许换行 */
+            text-align: left;
+            padding: 0.5rem;
+        }
+        /* 超慢漂浮，拉开文字间距 */
+        @keyframes floatLeftToRight {
+            0% {
+                transform: translateX(-250px) translateY(0);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(calc(100vw + 250px)) translateY(var(--y-offset));
+                opacity: 0;
+            }
+        }
+        @keyframes flash {
+            from { opacity: 0.5; }
+            to { opacity: 0.7; text-shadow: 0 0 25px #ff6b6b; }
+        }
+    </style>
+</head>
+<body>
+    <div id="bg"></div>
+    <h1>距离2026年还有</h1>
+    <div class="countdown">
+        <div class="time-box">
+            <div class="time" id="days">00</div>
+            <div class="label">天</div>
+        </div>
+        <div class="time-box">
+            <div class="time" id="hours">00</div>
+            <div class="label">时</div>
+        </div>
+        <div class="time-box">
+            <div class="time" id="minutes">00</div>
+            <div class="label">分</div>
+        </div>
+        <div class="time-box">
+            <div class="time" id="seconds">00</div>
+            <div class="label">秒</div>
+        </div>
+    </div>
+    <div id="blessing">致莫绪芬：新的一年，愿你平安喜乐，万事顺意，我们的故事虽有遗憾，但不后悔❤️</div>
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        // 倒计时功能
+        function updateCountdown() {
+            const now = new Date();
+            const target = new Date('2026-01-01 00:00:00');
+            const diff = target - now;
+
+            if (diff <= 0) {
+                document.querySelector('h1').textContent = '新年快乐！2026';
+                document.querySelector('.countdown').style.display = 'none';
+                document.getElementById('blessing').style.opacity = '0.8';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // 烟花特效
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        let fireworks = [];
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Firework {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height;
+                this.targetY = Math.random() * canvas.height * 0.3 + 30;
+                this.speed = Math.random() * 4 + 3;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.trail = [];
+            }
+            update() {
+                this.y -= this.speed;
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 15) this.trail.shift();
+                return this.y > this.targetY;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.moveTo(this.trail[0]?.x || this.x, this.trail[0]?.y || this.y);
+                this.trail.forEach(point => ctx.lineTo(point.x, point.y));
+                ctx.strokeStyle = `${this.color}80`;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = Math.random() * 8 - 4;
+                this.vy = Math.random() * 8 - 5;
+                this.color = color;
+                this.alpha = 1;
+                this.size = Math.random() * 4 + 2;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 0.015;
+                this.size *= 0.98;
+                return this.alpha > 0;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `${this.color}${Math.floor(this.alpha * 255).toString(16).padStart(2, '0')}`;
+                ctx.fill();
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(10, 10, 26, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            if (Math.random() < 0.12) fireworks.push(new Firework());
+            fireworks = fireworks.filter(firework => {
+                const isActive = firework.update();
+                firework.draw();
+                if (!isActive) {
+                    for (let i = 0; i < 50; i++) particles.push(new Particle(firework.x, firework.y, firework.color));
+                    return false;
+                }
+                return true;
+            });
+            particles = particles.filter(particle => {
+                particle.update();
+                particle.draw();
+                return particle.alpha > 0;
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // 专属漂浮文字（优化布局，避免重叠）
+        const floatingTexts = [
+            "前程似锦",
+            "新的一年，祝你好运",
+            "以后我就不在了，但是有啥问题还是可以来找我的哈，虽然我还是找不到什么理由去找你",
+            "真没想到分别的那天来得这么早😭",
+            "但我不后悔，要是还能回到相遇那天我也还是会大胆一点",
+            "还有就是以后要好好的照顾自己，对自己好一点",
+            "记住：我不在了也得好好学习，期待你26年的高考成绩，但不过有我保佑，肯定会很好的",
+            "还有要好好吃饭，少生气，少内耗",
+            "这个冬天我说过会去找你的，我会去履行自己的承诺，那怕是自己一个人",
+            "冬天见，或许不会再见",
+            "最后：莫绪芬，我爱你，我不后悔，我只后悔没有好好的珍惜这617天",
+            "如果注定不会重新开始，那就祝你早一点遇到你的白马王子，那就把我忘了吧"
+        ];
+        const body = document.body;
+        const maxHeight = window.innerHeight;
+        const rowHeight = 120; // 每行文字垂直间距
+        const totalRows = 4; // 屏幕垂直分为4行
+
+        function createFloatingText() {
+            const textEl = document.createElement('div');
+            textEl.className = 'floating-text';
+            textEl.textContent = floatingTexts[Math.floor(Math.random() * floatingTexts.length)];
+
+            // 随机分配到4行中的一行，垂直位置固定，避免重叠
+            const row = Math.floor(Math.random() * totalRows);
+            const top = row * rowHeight + 30; // 每行起始位置
+            textEl.style.top = `${top}px`;
+            textEl.style.left = '-250px'; // 左侧屏幕外入场
+
+            // 垂直偏移缩小，仅在本行内轻微浮动
+            const yOffset = Math.random() * 30 - 15;
+            textEl.style.setProperty('--y-offset', `${yOffset}px`);
+
+            // 动画时长延长到25-35秒，进一步拉开文字间距
+            textEl.style.animationDuration = `${Math.random() * 10 + 25}s`;
+
+            body.appendChild(textEl);
+
+            // 动画结束后移除
+            setTimeout(() => {
+                textEl.remove();
+            }, parseInt(textEl.style.animationDuration) * 1000);
+        }
+
+        // 延长创建间隔到3秒，减少同时出现的文字数量
+        setInterval(createFloatingText, 3000);
+        // 初始创建4个（每行1个），避免拥挤
+        for (let i = 0; i < 4; i++) {
+            setTimeout(createFloatingText, i * 800);
+        }
+    </script>
+</body>
+</html>
