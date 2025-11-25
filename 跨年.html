@@ -88,36 +88,33 @@
             z-index: -1;
             opacity: 0.9;
         }
-        /* 漂浮文字：分行显示+固定行高，避免重叠 */
+        /* 漂浮文字：强制一行显示，不换行 */
         .floating-text {
             position: absolute;
             color: #fff;
             text-shadow: 0 0 18px #ff8c8c;
-            font-size: 1.1rem;
+            font-size: 1rem; /* 缩小字体，适配长文本一行显示 */
             font-weight: 500;
             pointer-events: none;
             z-index: 2;
-            animation: floatLeftToRight 25s linear infinite; /* 再放慢，拉开间距 */
-            line-height: 1.8; /* 增大行高 */
-            width: 220px; /* 固定宽度，自动换行 */
-            white-space: normal; /* 允许换行 */
-            text-align: left;
-            padding: 0.5rem;
+            animation: floatLeftToRight 30s linear infinite; /* 大幅放慢，确保长文本读完 */
+            white-space: nowrap; /* 强制不换行 */
+            line-height: 1.4;
         }
-        /* 超慢漂浮，拉开文字间距 */
+        /* 超慢漂浮，适配长文本阅读 */
         @keyframes floatLeftToRight {
             0% {
-                transform: translateX(-250px) translateY(0);
+                transform: translateX(-500px) translateY(0); /* 左侧更远处入场，留足阅读时间 */
                 opacity: 0;
             }
-            15% {
+            10% {
                 opacity: 1;
             }
-            85% {
+            90% {
                 opacity: 1;
             }
             100% {
-                transform: translateX(calc(100vw + 250px)) translateY(var(--y-offset));
+                transform: translateX(calc(100vw + 500px)) translateY(var(--y-offset));
                 opacity: 0;
             }
         }
@@ -268,7 +265,7 @@
         }
         animate();
 
-        // 专属漂浮文字（优化布局，避免重叠）
+        // 专属漂浮文字（长文本一行显示，防重叠）
         const floatingTexts = [
             "前程似锦",
             "新的一年，祝你好运",
@@ -285,26 +282,26 @@
         ];
         const body = document.body;
         const maxHeight = window.innerHeight;
-        const rowHeight = 120; // 每行文字垂直间距
-        const totalRows = 4; // 屏幕垂直分为4行
+        const rowHeight = 80; // 每行垂直间距（缩小，适配一行文字）
+        const totalRows = 5; // 垂直分5行，分散文字
 
         function createFloatingText() {
             const textEl = document.createElement('div');
             textEl.className = 'floating-text';
             textEl.textContent = floatingTexts[Math.floor(Math.random() * floatingTexts.length)];
 
-            // 随机分配到4行中的一行，垂直位置固定，避免重叠
+            // 随机分配到5行，每行1个，垂直不重叠
             const row = Math.floor(Math.random() * totalRows);
-            const top = row * rowHeight + 30; // 每行起始位置
+            const top = row * rowHeight + 50; // 每行起始位置，避开顶部和底部
             textEl.style.top = `${top}px`;
-            textEl.style.left = '-250px'; // 左侧屏幕外入场
+            textEl.style.left = '-500px'; // 左侧远处入场，适配长文本
 
-            // 垂直偏移缩小，仅在本行内轻微浮动
-            const yOffset = Math.random() * 30 - 15;
+            // 轻微垂直偏移，轨迹自然
+            const yOffset = Math.random() * 20 - 10;
             textEl.style.setProperty('--y-offset', `${yOffset}px`);
 
-            // 动画时长延长到25-35秒，进一步拉开文字间距
-            textEl.style.animationDuration = `${Math.random() * 10 + 25}s`;
+            // 动画时长30-40秒，确保长文本完整读完
+            textEl.style.animationDuration = `${Math.random() * 10 + 30}s`;
 
             body.appendChild(textEl);
 
@@ -314,11 +311,11 @@
             }, parseInt(textEl.style.animationDuration) * 1000);
         }
 
-        // 延长创建间隔到3秒，减少同时出现的文字数量
-        setInterval(createFloatingText, 3000);
-        // 初始创建4个（每行1个），避免拥挤
-        for (let i = 0; i < 4; i++) {
-            setTimeout(createFloatingText, i * 800);
+        // 延长创建间隔到4秒，大幅减少同时出现的文字数量
+        setInterval(createFloatingText, 4000);
+        // 初始创建3个（分散在不同行），避免拥挤
+        for (let i = 0; i < 3; i++) {
+            setTimeout(createFloatingText, i * 1000);
         }
     </script>
 </body>
